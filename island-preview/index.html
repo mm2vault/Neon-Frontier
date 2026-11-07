@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ISLAND — LAST SURVIVOR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap');
+:root{--cyan:#71f4e2;--gold:#f4c879;--white:#f3f6f3}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07191b;color:var(--white);font-family:'DM Sans',sans-serif}
+#scene{position:fixed;inset:0}canvas{display:block;width:100%;height:100%}
+.vignette{position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(3,14,18,.78),rgba(3,14,18,.2) 62%,rgba(3,14,18,.05)),linear-gradient(0deg,rgba(2,10,13,.65),transparent 48%,rgba(2,10,13,.18))}
+.top{position:fixed;top:28px;left:34px;right:34px;display:flex;align-items:center;justify-content:space-between;z-index:3}
+.brand{font:700 13px Orbitron;letter-spacing:4px}.brand span{color:var(--cyan)}
+.status{font-size:10px;letter-spacing:2px;color:#d5e2d9;border:1px solid #ffffff30;background:#07191b55;padding:10px 14px;border-radius:30px;backdrop-filter:blur(10px)}
+.status i{display:inline-block;width:6px;height:6px;background:#7ef0bd;border-radius:50%;margin-right:8px;box-shadow:0 0 12px #7ef0bd}
+.content{position:fixed;z-index:2;left:8.5%;top:50%;transform:translateY(-44%);width:min(480px,80vw);transition:.7s}
+.eyebrow{font-size:10px;letter-spacing:4px;color:var(--cyan);font-weight:700;margin-bottom:18px}
+h1{font:800 clamp(42px,7vw,84px)/.96 Orbitron;margin:0;letter-spacing:-3px;text-shadow:0 8px 40px #001719}
+h1 em{font-style:normal;color:var(--gold)}
+.rule{height:1px;width:74px;background:var(--cyan);margin:27px 0 20px;box-shadow:0 0 14px var(--cyan)}
+.desc{max-width:365px;color:#d0ded8;font-size:14px;line-height:1.8}
+.actions{display:flex;gap:12px;align-items:center;margin-top:30px;flex-wrap:wrap}
+button{font:700 10px Orbitron;letter-spacing:1.8px;padding:16px 22px;border-radius:3px;cursor:pointer;transition:.25s}
+.primary{border:1px solid var(--cyan);background:var(--cyan);color:#052321;box-shadow:0 8px 35px #71f4e233}
+.primary:hover{transform:translateY(-3px);box-shadow:0 12px 38px #71f4e266}
+.secondary{background:#06191b55;color:#edf7f2;border:1px solid #ffffff55;backdrop-filter:blur(10px)}
+.secondary:hover{border-color:var(--gold);color:var(--gold)}
+.features{display:flex;gap:22px;margin-top:40px;flex-wrap:wrap}
+.feature{font-size:9px;letter-spacing:1.4px;color:#d8e4dd;text-transform:uppercase}.feature b{display:block;font:600 17px Orbitron;color:var(--gold);margin-bottom:6px}
+.bottom{position:fixed;z-index:3;left:34px;right:34px;bottom:25px;display:flex;justify-content:space-between;align-items:end;color:#c3d1ca;font-size:9px;letter-spacing:2px}
+.hint{opacity:.75}.coords{font-family:Orbitron;color:#a8c5ba}
+#game{display:none;position:fixed;z-index:4;inset:0;pointer-events:none}
+.hud{position:absolute;top:22px;left:22px;display:flex;gap:8px;flex-wrap:wrap}
+.meter{background:#061719aa;border:1px solid #b4fff02c;border-radius:5px;padding:10px 13px;backdrop-filter:blur(12px);min-width:105px}
+.meter small{display:block;font-size:8px;letter-spacing:1.5px;color:#a6c9be;margin-bottom:7px}.bar{height:4px;background:#ffffff25;border-radius:5px;overflow:hidden}.bar span{display:block;height:100%;background:var(--cyan);width:85%}
+.objective{position:absolute;top:22px;right:22px;background:#061719aa;border:1px solid #b4fff02c;padding:13px 16px;border-radius:5px;font-size:10px;letter-spacing:1px}
+#back{pointer-events:auto;position:absolute;bottom:25px;right:25px}
+#toast{position:fixed;z-index:8;bottom:80px;left:50%;transform:translateX(-50%);background:#071b1cdd;border:1px solid #71f4e277;padding:12px 18px;font-size:11px;letter-spacing:1px;opacity:0;transition:.3s;pointer-events:none}
+@media(max-width:650px){.top{top:18px;left:18px;right:18px}.status{font-size:8px;padding:8px}.content{left:7%;top:48%;width:86vw}.desc{font-size:12px;max-width:300px}h1{font-size:clamp(40px,13vw,65px)}.features{gap:15px;margin-top:27px}.feature b{font-size:14px}.bottom{left:18px;right:18px;bottom:15px;font-size:8px}.hint{max-width:190px;line-height:1.6}.actions button{padding:14px 16px}.vignette{background:linear-gradient(90deg,rgba(3,14,18,.7),rgba(3,14,18,.18)),linear-gradient(0deg,rgba(2,10,13,.7),transparent 55%)}}
+</style>
+</head>
+<body>
+<div id="scene"></div><div class="vignette"></div>
+<header class="top"><div class="brand">ISLAND<span> / </span>LAST SURVIVOR</div><div class="status"><i></i> SYSTEM ONLINE · BUILD 0.1 PREVIEW</div></header>
+<main class="content" id="menu">
+ <div class="eyebrow">NO SIGNAL. NO RESCUE. JUST YOU.</div>
+ <h1>THE<br><em>LAST</em><br>SURVIVOR</h1>
+ <div class="rule"></div>
+ <p class="desc">Uçsuz bucaksız okyanusun ortasında, gizemli bir adada gözlerini açtın. Hayatta kal. Keşfet. Kendi hikâyeni yaz.</p>
+ <div class="actions"><button class="primary" id="start">▶ &nbsp; ADAYA GİR</button><button class="secondary" id="explore">ADAYI KEŞFET</button></div>
+ <div class="features"><div class="feature"><b>01</b>Hayatta kal</div><div class="feature"><b>02</b>Keşfet</div><div class="feature"><b>03</b>İnşa et</div></div>
+</main>
+<footer class="bottom"><div class="hint">WASD / DOKUNMATİK KONTROL · 3D ISLAND PREVIEW</div><div class="coords">08° 14' S &nbsp; 119° 32' E</div></footer>
+<section id="game"><div class="hud">
+ <div class="meter"><small>SAĞLIK</small><div class="bar"><span style="width:92%"></span></div></div>
+ <div class="meter"><small>AÇLIK</small><div class="bar"><span style="width:72%;background:#f4c879"></span></div></div>
+ <div class="meter"><small>SUSUZLUK</small><div class="bar"><span style="width:58%;background:#79c9ff"></span></div></div>
+ </div><div class="objective">GÖREV &nbsp; · &nbsp; KIYIYI KEŞFET</div><button class="secondary" id="back">MENÜYE DÖN</button></section>
+<div id="toast">ADA KEŞİF MODU · KAMERA SERBEST</div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const host=document.querySelector('#scene');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x8c7771);scene.fog=new THREE.FogExp2(0x9a8980,.012);
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,500);camera.position.set(22,17,31);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;host.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xb9e8ed,0x263b31,2.1));
+const sun=new THREE.DirectionalLight(0xffd2a0,3.1);sun.position.set(-20,30,14);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+const waterGeo=new THREE.PlaneGeometry(260,260,100,100);waterGeo.rotateX(-Math.PI/2);
+const waterMat=new THREE.MeshStandardMaterial({color:0x167b80,roughness:.27,metalness:.16,transparent:true,opacity:.96});
+const water=new THREE.Mesh(waterGeo,waterMat);water.position.y=-1.15;water.receiveShadow=true;scene.add(water);
+const waterPos=waterGeo.attributes.position;const waterBase=Float32Array.from(waterPos.array);
+const island=new THREE.Group();scene.add(island);
+const landGeo=new THREE.SphereGeometry(1,96,64);const p=landGeo.attributes.position;
+for(let i=0;i<p.count;i++){let x=p.getX(i),y=p.getY(i),z=p.getZ(i);let n=Math.sin(x*13+z*7)*.035+Math.sin(z*21-y*8)*.018;let factor=1+n;p.setXYZ(i,x*factor,y*factor,z*factor)}
+landGeo.computeVertexNormals();
+const land=new THREE.Mesh(landGeo,new THREE.MeshStandardMaterial({color:0x507a43,roughness:1}));land.scale.set(15,3.5,11);land.position.set(0,1.25,0);land.castShadow=true;land.receiveShadow=true;island.add(land);
+const sand=new THREE.Mesh(new THREE.SphereGeometry(1,64,40),new THREE.MeshStandardMaterial({color:0xd4b47a,roughness:1}));sand.scale.set(15.2,2.3,11.2);sand.position.set(0,.45,0);island.add(sand);
+for(let i=0;i<34;i++){const a=i*2.399,r=3+Math.sqrt(i)*1.45;const x=Math.cos(a)*r,z=Math.sin(a)*r*.72;const g=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),new THREE.MeshStandardMaterial({color:[0x315e3b,0x3d7041,0x527e43][i%3],roughness:1}));g.scale.set(2.4+Math.random()*1.1,1.1+Math.random()*.6,2.1);g.position.set(x,3.3+Math.random()*.6,z);g.castShadow=true;island.add(g)}
+const palmMat=new THREE.MeshStandardMaterial({color:0x80603d,roughness:1}),leafMat=new THREE.MeshStandardMaterial({color:0x397d4c,roughness:.9,side:THREE.DoubleSide});
+const palms=[];
+function palm(x,z,s=1){const g=new THREE.Group();g.position.set(x,1.5,z);g.scale.setScalar(s);island.add(g);
+ const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.16,.28,5,8),palmMat);trunk.position.y=2.5;trunk.rotation.z=-.13;trunk.castShadow=true;g.add(trunk);
+ const crown=new THREE.Group();crown.position.set(-.3,5,0);g.add(crown);
+ for(let j=0;j<7;j++){let a=j*Math.PI*2/7;let leaf=new THREE.Mesh(new THREE.ConeGeometry(.45,4.8,7,1,true),leafMat);leaf.position.set(Math.cos(a)*1.65,-.55,Math.sin(a)*1.65);leaf.rotation.z=-Math.PI/2+Math.cos(a)*.45;leaf.rotation.y=-a;leaf.scale.set(1,1,.45);leaf.castShadow=true;crown.add(leaf)}
+ palms.push(crown)}
+[[-10,-5,1.1],[-11,2,.9],[-7,7,.85],[5,7,1.05],[10,3,.95],[9,-5,1.1],[1,-8,.85],[-3,1,.8]].forEach(v=>palm(...v));
+for(let i=0;i<19;i++){let a=i*2.4,r=13+Math.random()*2;let rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.7+Math.random()*.8,0),new THREE.MeshStandardMaterial({color:0x666d66,roughness:1}));rock.position.set(Math.cos(a)*r,.25,Math.sin(a)*r*.72);rock.scale.y=.7;rock.rotation.set(Math.random(),Math.random(),Math.random());island.add(rock)}
+const survivor=new THREE.Group();survivor.position.set(2,3.3,1);island.add(survivor);
+const skin=new THREE.MeshStandardMaterial({color:0xb98563,roughness:.8}),shirt=new THREE.MeshStandardMaterial({color:0x344e4b,roughness:.9}),pants=new THREE.MeshStandardMaterial({color:0x343b3c,roughness:1});
+function limb(parent,mat,r1,r2,h,x,y,z){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,10),mat);m.position.set(x,y,z);m.castShadow=true;parent.add(m);return m}
+const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.38,.85,5,10),shirt);torso.position.y=1.65;torso.castShadow=true;survivor.add(torso);
+const head=new THREE.Mesh(new THREE.SphereGeometry(.29,20,16),skin);head.position.y=2.45;head.castShadow=true;survivor.add(head);
+const leg1=limb(survivor,pants,.16,.2,.85,-.2,.55,0),leg2=limb(survivor,pants,.16,.2,.85,.2,.55,0);
+const arm1=limb(survivor,skin,.11,.14,.8,-.48,1.65,0),arm2=limb(survivor,skin,.11,.14,.8,.48,1.65,0);
+const fire=new THREE.Group();fire.position.set(-4,2.8,1);island.add(fire);
+for(let i=0;i<3;i++){let log=new THREE.Mesh(new THREE.CylinderGeometry(.09,.11,1.4,7),new THREE.MeshStandardMaterial({color:0x68452b}));log.rotation.z=Math.PI/2;log.rotation.y=i*1.05;fire.add(log)}
+const flame=new THREE.Mesh(new THREE.ConeGeometry(.38,1.35,9),new THREE.MeshBasicMaterial({color:0xff9d43}));flame.position.y=.7;fire.add(flame);
+const glow=new THREE.PointLight(0xff8a3c,5,13);glow.position.y=1;fire.add(glow);
+for(let i=0;i<8;i++){let m=new THREE.Mesh(new THREE.ConeGeometry(5+Math.random()*3,10+Math.random()*7,5),new THREE.MeshStandardMaterial({color:0x4c5551,roughness:1}));m.position.set(-45+i*13,3,-65-Math.random()*12);scene.add(m)}
+const sunDisk=new THREE.Mesh(new THREE.SphereGeometry(3,24,16),new THREE.MeshBasicMaterial({color:0xffc28c}));sunDisk.position.set(-45,25,-95);scene.add(sunDisk);
+let t=0,mode='menu',drag=false,lastX=0,lastY=0,rot=0,zoom=0;
+renderer.domElement.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});
+renderer.domElement.addEventListener('pointerup',()=>drag=false);
+renderer.domElement.addEventListener('pointermove',e=>{if(drag){rot+=(e.clientX-lastX)*.004;zoom+=(e.clientY-lastY)*.025;lastX=e.clientX;lastY=e.clientY}});
+function animate(){requestAnimationFrame(animate);t+=.012;
+ const a=waterGeo.attributes.position;for(let i=0;i<a.count;i++){let x=waterBase[i*3],z=waterBase[i*3+2];a.array[i*3+1]=waterBase[i*3+1]+Math.sin(x*.13+t*1.7)*.19+Math.cos(z*.16+t*1.2)*.14}a.needsUpdate=true;waterGeo.computeVertexNormals();
+ palms.forEach((p,i)=>{p.rotation.z=Math.sin(t*.8+i)*.055;p.rotation.x=Math.cos(t*.7+i)*.035});
+ survivor.position.y=3.3+Math.sin(t*2.2)*.055;survivor.rotation.y=Math.sin(t*.35)*.12;arm1.rotation.z=Math.sin(t*1.4)*.06;arm2.rotation.z=-Math.sin(t*1.4)*.06;
+ flame.scale.y=.85+Math.sin(t*9)*.2;flame.rotation.z=Math.sin(t*7)*.08;glow.intensity=4.2+Math.sin(t*8)*1.2;
+ if(mode==='menu'){let ang=t*.09+rot;let radius=34+zoom;camera.position.x=Math.cos(ang)*radius;camera.position.z=Math.sin(ang)*radius;camera.position.y=16+Math.sin(t*.35)*1.4;camera.lookAt(0,2,0)}
+ else{camera.position.lerp(new THREE.Vector3(18,13,23),.025);camera.lookAt(0,2,0)}
+ renderer.render(scene,camera)}
+animate();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+const menu=document.querySelector('#menu'),game=document.querySelector('#game'),toast=document.querySelector('#toast');
+function enter(){mode='game';menu.style.opacity='0';setTimeout(()=>menu.style.display='none',600);game.style.display='block';document.querySelector('.bottom').style.display='none';toast.style.opacity='1';setTimeout(()=>toast.style.opacity='0',2600)}
+document.querySelector('#start').onclick=enter;document.querySelector('#explore').onclick=()=>{toast.textContent='KAMERAYI SÜRÜKLEYEREK ADAYI İNCELE';toast.style.opacity='1';setTimeout(()=>toast.style.opacity='0',2400)};
+document.querySelector('#back').onclick=()=>{mode='menu';game.style.display='none';menu.style.display='block';setTimeout(()=>menu.style.opacity='1',20);document.querySelector('.bottom').style.display='flex'};
+</script>
+</body></html>
